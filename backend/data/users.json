@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "username": "tester_alpha",
+    "reputation": 8
+  },
+  {
+    "id": 2,
+    "username": "tester_beta",
+    "reputation": 2
+  }
+]
