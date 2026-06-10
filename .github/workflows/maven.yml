@@ -2,10 +2,8 @@ name: BidGadget CI
 
 on:
   push:
-    branches: [ main ]
-
-  pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
@@ -20,5 +18,6 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Run Tests
+      - name: Run Maven Tests
+        working-directory: bidgadget
         run: mvn test
