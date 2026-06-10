@@ -1,0 +1,39 @@
+name: BidGadget CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  java-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Run JUnit Tests
+        run: mvn test
+
+  php-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+
+      - name: Install Composer Dependencies
+        run: composer install
+
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit tests
