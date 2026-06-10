@@ -1,5 +1,0 @@
-# Created at 2026-06-10T23:06:06.428
-Boot Manifest-JAR contains absolute paths in classpath 'D:\New folder\bidgadget-playground\bidgadget\target\test-classes'
-Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
-'other' has different root
-
