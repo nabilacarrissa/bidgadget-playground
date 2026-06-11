@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     <?php endif; ?>
 
-    <form id="bidForm" method="POST" action="bid.php?item=<?php echo $_GET['item']; ?>">
+    <form id="bidForm" >
         <input type="hidden" id="auction_id" name="auction_id" value="<?php echo $_GET['auction_id']; ?>">
 
         <input type="hidden" id="user_id" name="user_id" value="1" data-testid="hidden-user-id">

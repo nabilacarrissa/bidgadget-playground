@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BidEngine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">bidgadget</a> &gt; <a href="index.source.html" class="el_package">com.bidgadget</a> &gt; <span class="el_source">BidEngine.java</span></div><h1>BidEngine.java</h1><pre class="source lang-java linenums">package com.bidgadget;
+
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+
+<span class="nc" id="L13">public class BidEngine{</span>
+
+    public static void main(String[] args) throws IOException{
+<span class="nc" id="L16">        HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);</span>
+<span class="nc" id="L17">        server.createContext(&quot;/process-bid&quot;, new BidHandler());</span>
+<span class="nc" id="L18">        server.setExecutor(null);</span>
+<span class="nc" id="L19">        server.start();</span>
+<span class="nc" id="L20">    }</span>
+
+<span class="fc" id="L22">    static class BidHandler implements HttpHandler{</span>
+        @Override
+        public void handle(HttpExchange exchange) throws IOException{
+<span class="nc bnc" id="L25" title="All 2 branches missed.">            if (&quot;POST&quot;.equals(exchange.getRequestMethod())) {</span>
+<span class="nc" id="L26">                InputStream is = exchange.getRequestBody();</span>
+<span class="nc" id="L27">                String body = new String(is.readAllBytes(), StandardCharsets.UTF_8);</span>
+
+<span class="nc" id="L29">                double bidAmount = extractDouble(body, &quot;\&quot;bid_amount\&quot;&quot;);</span>
+<span class="nc" id="L30">                int userId = (int) extractDouble(body, &quot;\&quot;user_id\&quot;&quot;);</span>
+
+<span class="nc" id="L32">                double currentHighest = 25000.0;</span>
+<span class="nc" id="L33">                int timeRemaining = 45;</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">                int userReputation = (userId == 1) ? 8 : 2;</span>
+
+<span class="nc" id="L36">                String status = calculateBidStatus(bidAmount, currentHighest, timeRemaining, userReputation);</span>
+
+<span class="nc" id="L38">                String response = &quot;{\&quot;status\&quot;: \&quot;&quot; + status + &quot;\&quot;}&quot;;</span>
+<span class="nc" id="L39">                exchange.getResponseHeaders().set(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+<span class="nc" id="L40">                exchange.sendResponseHeaders(200, response.getBytes().length);</span>
+<span class="nc" id="L41">                OutputStream os = exchange.getResponseBody();</span>
+<span class="nc" id="L42">                os.write(response.getBytes());</span>
+<span class="nc" id="L43">                os.close();</span>
+<span class="nc" id="L44">            } else {</span>
+<span class="nc" id="L45">                exchange.sendResponseHeaders(405, -1);</span>
+            }
+<span class="nc" id="L47">        }</span>
+
+        private double extractDouble(String json, String key){
+<span class="nc" id="L50">            String searchKey = key + &quot;:&quot;;</span>
+<span class="nc" id="L51">            int startIndex = json.indexOf(searchKey);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (startIndex == -1) return 0.0;</span>
+<span class="nc" id="L53">            startIndex += searchKey.length();</span>
+<span class="nc" id="L54">            int endIndex = json.indexOf(&quot;,&quot;, startIndex);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            if (endIndex == -1) endIndex = json.indexOf(&quot;}&quot;, startIndex);</span>
+<span class="nc" id="L56">            String valueStr = json.substring(startIndex, endIndex).trim();</span>
+<span class="nc" id="L57">            return Double.parseDouble(valueStr);</span>
+        }
+
+        public String calculateBidStatus(double bidAmount, double currentHighest, int timeRemaining, int userReputation){
+<span class="fc bfc" id="L61" title="All 2 branches covered.">            if (timeRemaining &gt; 0) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">                if (bidAmount &gt; currentHighest) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                    if (userReputation &lt; 5) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">                        if (bidAmount &gt; currentHighest * 1.5) {</span>
+<span class="fc" id="L65">                            return &quot;REJECTED_SUSPICIOUS_ACTIVITY&quot;;</span>
+                        } else {
+<span class="fc" id="L67">                            return &quot;ACCEPTED_PENDING_MANUAL_REVIEW&quot;;</span>
+                        }
+                    } else {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                        if (timeRemaining &lt; 60) {</span>
+<span class="fc" id="L71">                            return &quot;ACCEPTED_AND_TIME_EXTENDED&quot;;</span>
+                        } else {
+<span class="fc" id="L73">                            return &quot;ACCEPTED_NORMAL&quot;;</span>
+                        }
+                    }
+                } else {
+<span class="fc bfc" id="L77" title="All 2 branches covered.">                    if (bidAmount &lt;= 0) {</span>
+<span class="fc" id="L78">                        return &quot;REJECTED_INVALID_AMOUNT&quot;;</span>
+                    } else {
+<span class="fc" id="L80">                        return &quot;REJECTED_BID_TOO_LOW&quot;;</span>
+                    }
+                }
+            } else {
+<span class="fc" id="L84">                return &quot;REJECTED_AUCTION_CLOSED&quot;;</span>
+            }
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
