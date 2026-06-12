@@ -18,7 +18,6 @@ class ContinuousTestingTest extends TestCase
 
     protected function tearDown(): void
     {
-        // 🔥 BALIKKAN DATA SETELAH TEST
         copy($this->seedFile, $this->dbFile);
     }
 
