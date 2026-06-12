@@ -60,10 +60,6 @@ public class BidEngineTest {
         assertNotNull(handler.calculateBidStatus(35000, 25000, 60, 7));
     }
 
-    // =========================
-    // 🔥 TAMBAHAN UNTUK COVERAGE
-    // =========================
-
     @Test
     void testExactThresholdReputationHigh() {
         // userReputation >= 5 & timeRemaining >= 60 → ACCEPTED_NORMAL

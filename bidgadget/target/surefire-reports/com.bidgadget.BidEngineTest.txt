@@ -1,8 +1,8 @@
 -------------------------------------------------------------------------------
 Test set: com.bidgadget.BidEngineTest
 -------------------------------------------------------------------------------
-Tests run: 14, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.213 s <<< FAILURE! -- in com.bidgadget.BidEngineTest
-com.bidgadget.BidEngineTest.testHighBidButLowTimeReputationMix -- Time elapsed: 0.017 s <<< FAILURE!
+Tests run: 14, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.341 s <<< FAILURE! -- in com.bidgadget.BidEngineTest
+com.bidgadget.BidEngineTest.testHighBidButLowTimeReputationMix -- Time elapsed: 0.020 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <ACCEPTED_PENDING_MANUAL_REVIEW> but was: <REJECTED_SUSPICIOUS_ACTIVITY>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
@@ -10,12 +10,12 @@ org.opentest4j.AssertionFailedError: expected: <ACCEPTED_PENDING_MANUAL_REVIEW> 
 	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
 	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
 	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
-	at com.bidgadget.BidEngineTest.testHighBidButLowTimeReputationMix(BidEngineTest.java:101)
+	at com.bidgadget.BidEngineTest.testHighBidButLowTimeReputationMix(BidEngineTest.java:97)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 
-com.bidgadget.BidEngineTest.testNegativeBid -- Time elapsed: 0.004 s <<< FAILURE!
+com.bidgadget.BidEngineTest.testNegativeBid -- Time elapsed: 0.006 s <<< FAILURE!
 org.opentest4j.AssertionFailedError: expected: <REJECTED_BID_TOO_LOW> but was: <REJECTED_INVALID_AMOUNT>
 	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
 	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)

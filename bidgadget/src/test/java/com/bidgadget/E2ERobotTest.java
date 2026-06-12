@@ -7,7 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class E2ERobotTest {
 
@@ -18,33 +18,68 @@ public class E2ERobotTest {
         WebDriver driver = new ChromeDriver();
 
         try {
-            // 1. buka halaman
-            driver.get("http://localhost:8000/bid.php?auction_id=101&item=MacBook");
+
+            System.out.println("Membuka halaman bidding...");
+            driver.get("http://localhost:8080/bid.php?auction_id=101&item=MacBook");
+
+            Thread.sleep(3000);
+
+            System.out.println("Mengisi jumlah penawaran...");
+
+            WebElement input = driver.findElement(By.id("bid_amount"));
+            input.click();
 
             Thread.sleep(1000);
 
-            // 2. isi bid
-            WebElement input = driver.findElement(By.id("bid_amount"));
-            input.clear();
-            input.sendKeys("30000");
+            // Ketik perlahan seperti manusia
+            input.sendKeys("3");
+            Thread.sleep(500);
 
-            // 3. submit
+            input.sendKeys("0");
+            Thread.sleep(500);
+
+            input.sendKeys("0");
+            Thread.sleep(500);
+
+            input.sendKeys("0");
+            Thread.sleep(500);
+
+            input.sendKeys("0");
+
+            Thread.sleep(3000);
+
+            System.out.println("Klik tombol Kirim Penawaran...");
+
             driver.findElement(By.id("submitBid")).click();
 
-            Thread.sleep(2000);
+            Thread.sleep(5000);
 
-            // 4. ambil hasil
-            WebElement result = driver.findElement(By.id("status-message"));
+            System.out.println("Membaca hasil bidding...");
+
+            WebElement result =
+                    driver.findElement(By.id("status-message"));
 
             String text = result.getText();
+
             System.out.println("HASIL ROBOT: " + text);
 
-            // 5. validasi
+            Thread.sleep(3000);
+
             assertTrue(
-                text.contains("ACCEPTED") || text.contains("REJECTED")
+                    text.contains("ACCEPTED")
+                    || text.contains("REJECTED"),
+                    "Status bidding tidak ditemukan"
             );
 
+            System.out.println("Test berhasil!");
+
+            Thread.sleep(3000);
+
         } finally {
+
+            System.out.println("Menutup browser...");
+            Thread.sleep(2000);
+
             driver.quit();
         }
     }
