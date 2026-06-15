@@ -37,7 +37,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -50,13 +51,14 @@ jobs:
 
 
   # =========================
-  # INTEGRATION TEST
+  # INTEGRATION TEST (SAFE)
   # =========================
   integration-test:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       # ===== JAVA BACKEND =====
       - name: Setup Java
@@ -73,7 +75,7 @@ jobs:
           sleep 6
 
       # ===== PHP SERVER =====
-      - name: Setup PHP Server
+      - name: Start PHP Server
         run: |
           nohup php -S localhost:8000 -t . > php.log 2>&1 &
           sleep 4
@@ -81,6 +83,6 @@ jobs:
       # ===== INTEGRATION TEST =====
       - name: Run Integration Test
         run: |
-          curl -i -X POST http://localhost:8000/process-bid \
+          curl -X POST http://localhost:8000/process-bid \
           -H "Content-Type: application/json" \
           -d '{"auction_id":101,"user_id":1,"bid_amount":30000}'
