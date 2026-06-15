@@ -8,6 +8,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 
 public class E2ERobotTest {
 
@@ -52,12 +55,15 @@ public class E2ERobotTest {
 
             driver.findElement(By.id("submitBid")).click();
 
-            Thread.sleep(5000);
-
-            System.out.println("Membaca hasil bidding...");
+            WebDriverWait wait =
+                new WebDriverWait(driver, Duration.ofSeconds(10));
 
             WebElement result =
-                    driver.findElement(By.id("status-message"));
+                    wait.until(
+                            ExpectedConditions.visibilityOfElementLocated(
+                                    By.id("status-message")
+                            )
+                    );
 
             String text = result.getText();
 
