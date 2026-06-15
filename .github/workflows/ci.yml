@@ -7,25 +7,31 @@ on:
 jobs:
 
   # =========================
-  # JAVA UNIT TEST
+  # JAVA TEST
   # =========================
   java-test:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+    defaults:
+      run:
+        working-directory: bidgadget   # 🔥 PENTING INI FIX ERROR POM
 
-      - uses: actions/setup-java@v4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Run Java Unit Tests
+      - name: Run Maven Test
         run: mvn clean test
 
 
   # =========================
-  # PHP UNIT TEST
+  # PHP TEST
   # =========================
   php-test:
     runs-on: ubuntu-latest
@@ -33,14 +39,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: shivammathur/setup-php@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
 
       - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
+        working-directory: frontend
+        run: composer install
 
       - name: Run PHPUnit
+        working-directory: frontend
         run: vendor/bin/phpunit tests
 
 
@@ -53,36 +62,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # JAVA BACKEND
-      - uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build Java
-        run: mvn clean compile
-
-      - name: Start Java Server
+      - name: Build & Run Java Server
+        working-directory: bidgadget
         run: |
-          nohup java -cp target/classes com.bidgadget.BidEngine > java.log 2>&1 &
+          mvn clean compile
+          java -cp target/classes com.bidgadget.BidEngine &
           sleep 5
 
-      # PHP FRONTEND
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.2
+      - name: Setup PHP server
+        working-directory: frontend
+        run: php -S localhost:8000 -t . &
 
-      - name: Start PHP Server
+      - name: Run integration test
         run: |
-          nohup php -S 0.0.0.0:8000 -t frontend > php.log 2>&1 &
-          sleep 3
-
-      # WAIT + TEST
-      - name: Check server is alive
-        run: curl -f http://localhost:8000 || true
-
-      - name: Run Integration Test
-        run: |
-          curl -i -X POST http://localhost:8000/process-bid \
+          curl -X POST http://localhost:8000/process-bid \
           -H "Content-Type: application/json" \
           -d '{"auction_id":101,"user_id":1,"bid_amount":30000}'
