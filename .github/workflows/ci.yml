@@ -14,7 +14,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: bidgadget   # 🔥 PENTING INI FIX ERROR POM
+        working-directory: bidgadget
 
     steps:
       - name: Checkout code
@@ -44,12 +44,11 @@ jobs:
         with:
           php-version: 8.2
 
-      - name: Install dependencies
-        working-directory: frontend
-        run: composer install
+      # ❌ HAPUS composer (karena tidak ada composer.json)
+      - name: Skip Composer Install
+        run: echo "No composer used in this project"
 
       - name: Run PHPUnit
-        working-directory: frontend
         run: vendor/bin/phpunit tests
 
 
@@ -62,25 +61,29 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ===== JAVA BACKEND =====
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build & Run Java Server
+      - name: Build & Start Java Server
         working-directory: bidgadget
         run: |
           mvn clean compile
-          java -cp target/classes com.bidgadget.BidEngine &
+          nohup java -cp target/classes com.bidgadget.BidEngine > java.log 2>&1 &
           sleep 5
 
-      - name: Setup PHP server
-        working-directory: frontend
-        run: php -S localhost:8000 -t . &
-
-      - name: Run integration test
+      # ===== PHP SERVER =====
+      - name: Setup PHP Server
         run: |
-          curl -X POST http://localhost:8000/process-bid \
+          nohup php -S localhost:8000 -t . > php.log 2>&1 &
+          sleep 3
+
+      # ===== INTEGRATION TEST =====
+      - name: Run Integration Test
+        run: |
+          curl -i -X POST http://localhost:8000/process-bid \
           -H "Content-Type: application/json" \
           -d '{"auction_id":101,"user_id":1,"bid_amount":30000}'
