@@ -43,13 +43,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
-
-      # ❌ HAPUS composer (karena tidak ada composer.json)
-      - name: Skip Composer Install
-        run: echo "No composer used in this project"
+          tools: phpunit
 
       - name: Run PHPUnit
-        run: vendor/bin/phpunit tests
+        run: phpunit tests
 
 
   # =========================
@@ -73,13 +70,13 @@ jobs:
         run: |
           mvn clean compile
           nohup java -cp target/classes com.bidgadget.BidEngine > java.log 2>&1 &
-          sleep 5
+          sleep 6
 
       # ===== PHP SERVER =====
       - name: Setup PHP Server
         run: |
           nohup php -S localhost:8000 -t . > php.log 2>&1 &
-          sleep 3
+          sleep 4
 
       # ===== INTEGRATION TEST =====
       - name: Run Integration Test
