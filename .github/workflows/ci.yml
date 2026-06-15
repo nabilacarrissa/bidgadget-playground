@@ -51,7 +51,7 @@ jobs:
 
 
   # =========================
-  # INTEGRATION TEST (SAFE)
+  # INTEGRATION TEST 
   # =========================
   integration-test:
     runs-on: ubuntu-latest
