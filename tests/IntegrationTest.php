@@ -1,66 +1,65 @@
+<?php
 
+use PHPUnit\Framework\TestCase;
 
-// use PHPUnit\Framework\TestCase;
+class IntegrationTest extends TestCase
+{
+    public function testJavaEndpoint()
+    {
+        // Payload yang dikirim dari PHP ke Java
+        $payload = json_encode([
+            "auction_id" => 101,
+            "user_id" => 1,
+            "bid_amount" => 30000
+        ]);
 
-// class IntegrationTest extends TestCase
-// {
-//     public function testJavaEndpoint()
-//     {
-//         $payload = json_encode([
-//             "auction_id" => 101,
-//             "user_id" => 1,
-//             "bid_amount" => 30000
-//         ]);
+        // Endpoint Java
+        $ch = curl_init('http://localhost:8000/process-bid');
 
-//         $ch = curl_init(
-//             'http://localhost:8000/process-bid'
-//         );
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
-//         curl_setopt(
-//             $ch,
-//             CURLOPT_RETURNTRANSFER,
-//             true
-//         );
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Content-Length: ' . strlen($payload)
+        ]);
 
-//         curl_setopt(
-//             $ch,
-//             CURLOPT_POST,
-//             true
-//         );
+        // Kirim request
+        $response = curl_exec($ch);
 
-//         curl_setopt(
-//             $ch,
-//             CURLOPT_POSTFIELDS,
-//             $payload
-//         );
+        // Ambil HTTP status
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-//         curl_setopt(
-//             $ch,
-//             CURLOPT_HTTPHEADER,
-//             [
-//                 'Content-Type: application/json'
-//             ]
-//         );
+        curl_close($ch);
 
-//         $response =
-//             curl_exec($ch);
+        // Validasi HTTP 200
+        $this->assertEquals(
+            200,
+            $statusCode,
+            "Endpoint Java tidak mengembalikan HTTP 200"
+        );
 
-//         $status =
-//             curl_getinfo(
-//                 $ch,
-//                 CURLINFO_HTTP_CODE
-//             );
+        // Decode JSON response
+        $json = json_decode($response, true);
 
-//         curl_close($ch);
+        // Pastikan response valid JSON
+        $this->assertNotNull(
+            $json,
+            "Response bukan JSON yang valid"
+        );
 
-//         $this->assertEquals(
-//             200,
-//             $status
-//         );
+        // Pastikan field status ada
+        $this->assertArrayHasKey(
+            "status",
+            $json,
+            "Field status tidak ditemukan pada response"
+        );
 
-//         $this->assertStringContainsString(
-//             "status",
-//             $response
-//         );
-//     }
-// }
+        // Pastikan status berisi nilai yang valid
+        $this->assertTrue(
+            str_contains($json["status"], "ACCEPTED") ||
+            str_contains($json["status"], "REJECTED")
+        );
+    }
+}

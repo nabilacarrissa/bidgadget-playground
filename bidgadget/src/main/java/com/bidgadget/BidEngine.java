@@ -17,6 +17,7 @@ public class BidEngine{
         server.createContext("/process-bid", new BidHandler());
         server.setExecutor(null);
         server.start();
+        System.out.println("BidEngine running on port 8000...");
     }
 
     static class BidHandler implements HttpHandler{

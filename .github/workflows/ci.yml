@@ -13,16 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build & Run Java Tests
+      - name: Run Java Unit Tests
         run: mvn clean test
 
 
@@ -33,19 +31,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup PHP 8.2
-        uses: shivammathur/setup-php@v2
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
-          tools: composer
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist
 
-      - name: Run PHPUnit tests
+      - name: Run PHPUnit
         run: vendor/bin/phpunit tests
 
 
@@ -56,36 +51,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # ---- JAVA BACKEND ----
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
+      # JAVA BACKEND
+      - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      - name: Build Java Backend
+      - name: Build Java
         run: mvn clean compile
 
-      - name: Start Java Backend Server
+      - name: Start Java Server
         run: |
-          java -cp target/classes com.bidgadget.BidEngine &
+          nohup java -cp target/classes com.bidgadget.BidEngine > java.log 2>&1 &
           sleep 5
 
-      # ---- PHP FRONTEND SERVER ----
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      # PHP FRONTEND
+      - uses: shivammathur/setup-php@v2
         with:
           php-version: 8.2
 
       - name: Start PHP Server
         run: |
-          php -S localhost:8000 -t frontend &
+          nohup php -S 0.0.0.0:8000 -t frontend > php.log 2>&1 &
           sleep 3
 
-      # ---- INTEGRATION TEST ----
+      # WAIT + TEST
+      - name: Check server is alive
+        run: curl -f http://localhost:8000 || true
+
       - name: Run Integration Test
         run: |
           curl -i -X POST http://localhost:8000/process-bid \

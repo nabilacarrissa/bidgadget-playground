@@ -1,29 +1,32 @@
 describe('BidGadget E2E Test', () => {
 
-it('User berhasil melakukan bidding', () => {
+  it('User berhasil melakukan bidding', () => {
 
-    cy.visit('http://127.0.0.1:8000/bid.php?auction_id=101&item=MacBook');
+    cy.visit(
+      'http://127.0.0.1:8080/bid.php?auction_id=101&item=MacBook'
+    );
 
-    // isi input
     cy.get('#bid_amount')
-    .should('be.visible')
-    .clear()
-    .type('30000');
+      .should('be.visible')
+      .clear()
+      .type('30000');
 
-    // klik submit
     cy.get('#submitBid')
-    .should('be.visible')
-    .click();
+      .should('be.visible')
+      .click();
 
-    // tunggu hasil muncul (lebih stabil dari cy.wait)
-    cy.get('body').should(($body) => {
-    const text = $body.text();
+    cy.get('#status-message', { timeout: 10000 })
+      .should('exist')
+      .invoke('text')
+      .then((text) => {
 
-    expect(
-        text.includes('ACCEPTED') || text.includes('REJECTED')
-    )
-    });
+        expect(
+          text.includes('ACCEPTED') ||
+          text.includes('REJECTED')
+        ).to.equal(true);
 
-});
+      });
+
+  });
 
 });

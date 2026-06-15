@@ -12,7 +12,6 @@ class ContinuousTestingTest extends TestCase
         $this->seedFile = __DIR__ . '/../backend/data/auctions_seed.json';
         $this->dbFile   = __DIR__ . '/../backend/data/auctions.json';
 
-        // 🔥 RESET DATA SEBELUM SETIAP TEST
         copy($this->seedFile, $this->dbFile);
     }
 
